@@ -2,6 +2,9 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
 const registerUser = async (req, res) => {
+    
+    
+
   try {
     const { name, email, password } = req.body;
 
@@ -19,6 +22,17 @@ const registerUser = async (req, res) => {
         success: false,
         message: "User already exists"
       });
+    }
+    
+    const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+    return res.status(400).json({
+        success: false,
+        message:
+        "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number"
+    });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
