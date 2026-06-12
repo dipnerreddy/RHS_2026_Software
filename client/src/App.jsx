@@ -1,40 +1,56 @@
-import { useEffect, useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-function App() {
-  const [message, setMessage] = useState("Checking backend...");
-  const [error, setError] = useState("");
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Home from "./pages/Home";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
-  useEffect(() => {
-    fetch("http://localhost:8090/")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Backend responded with an error");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message);
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  }, []);
+import ProtectedRoute from "./components/ProtectedRoute";
+
+function RootRedirect() {
+  const token = localStorage.getItem("token");
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h1>React + Node.js Connection Test</h1>
-
-      {error ? (
-        <p style={{ color: "red" }}>
-          ❌ Backend connection failed: {error}
-        </p>
-      ) : (
-        <p style={{ color: "green" }}>
-          ✅ Backend says: {message}
-        </p>
-      )}
-    </div>
+    <Navigate
+      to={token ? "/home" : "/login"}
+      replace
+    />
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<RootRedirect />} />
+
+      <Route path="/login" element={<Login />} />
+
+      <Route path="/register" element={<Register />} />
+
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/forgot-password"
+        element={<ForgotPassword />}
+      />
+
+      <Route
+        path="/reset-password/:token"
+        element={<ResetPassword />}
+      />
+
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />}
+      />
+    </Routes>
+  );
+}
