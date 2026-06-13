@@ -7,7 +7,13 @@ const generateResetToken = require("../utils/generateResetToken");
 /// Controllers for user authentication and profile management
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const {
+      name,
+      email,
+      password,
+      role,
+      assignedClasses
+    } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -42,10 +48,21 @@ const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // const user = await User.create({
+    //   name: name.trim(),
+    //   email: normalizedEmail,
+    //   password: hashedPassword
+    // });
     const user = await User.create({
       name: name.trim(),
       email: normalizedEmail,
-      password: hashedPassword
+      password: hashedPassword,
+
+      role:
+        role || "CLASS_TEACHER",
+
+      assignedClasses:
+        assignedClasses || []
     });
 
     res.status(201).json({
@@ -112,7 +129,10 @@ const loginUser = async (req, res) => {
       data: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role,
+        assignedClasses:
+          user.assignedClasses
       }
     });
   } catch (error) {
