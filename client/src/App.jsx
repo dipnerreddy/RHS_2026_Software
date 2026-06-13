@@ -5,7 +5,7 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-
+import PublicRoute from "./components/PublicRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function RootRedirect() {
@@ -24,9 +24,24 @@ export default function App() {
     <Routes>
       <Route path="/" element={<RootRedirect />} />
 
-      <Route path="/login" element={<Login />} />
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
 
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
+
 
       <Route
         path="/home"

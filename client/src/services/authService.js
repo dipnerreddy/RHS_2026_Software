@@ -9,7 +9,6 @@ const authService = {
       `${API_URL}/register`,
       userData
     );
-
     return response.data;
   },
 

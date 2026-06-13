@@ -3,8 +3,10 @@ import { useNavigate, Link } from "react-router-dom";
 
 import authService from "../services/authService";
 
+
 export default function Login() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -21,28 +23,26 @@ export default function Login() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setError("");
+  try {
+    setLoading(true);
+    setError("");
 
-      const response = await authService.login(
-        formData
-      );
+    const response = await authService.login(formData);
 
-      localStorage.setItem(
-        "token",
-        response.token
-      );
+    localStorage.setItem("token", response.token);
 
-      navigate("/home");
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Login failed"
-      );
-    }
-  };
+    navigate("/home");
+  } catch (err) {
+    setError(
+      err.response?.data?.message ||
+      "Login failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -80,9 +80,10 @@ export default function Login() {
 
         <button
           type="submit"
+          disabled={loading}
           className="w-full border p-2 rounded"
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <div className="mt-4 flex justify-between">
