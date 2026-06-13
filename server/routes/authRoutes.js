@@ -3,7 +3,9 @@ const express = require("express");
 const {
   registerUser,
   loginUser,
-  getProfile
+  getProfile,
+  forgotPassword,
+  resetPassword
 } = require("../controllers/authController");
 
 const authenticateUser = require("../middleware/authMiddleware");
@@ -19,5 +21,9 @@ router.get(
   authenticateUser,
   getProfile
 );
+
+router.post("/forgot-password", forgotPassword);
+
+router.post("/reset-password/:token", resetPassword);
 
 module.exports = router;

@@ -1,7 +1,10 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const generateToken = require("../utils/generateToken");
+const crypto = require("crypto");
+const generateResetToken = require("../utils/generateResetToken");
 
+/// Controllers for user authentication and profile management
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -63,7 +66,7 @@ const registerUser = async (req, res) => {
     });
   }
 };
-
+/// Controllers for user authentication and profile management
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -121,7 +124,7 @@ const loginUser = async (req, res) => {
     });
   }
 };
-
+/// Controllers for user authentication and profile management
 const getProfile = async (req, res) => {
   try {
     res.status(200).json({
@@ -136,9 +139,96 @@ const getProfile = async (req, res) => {
     });
   }
 };
+/// Controllers for user authentication and profile management
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
 
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: {
+        $gt: Date.now()
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid or expired reset token"
+      });
+    }
+
+    const hashedPassword =
+      await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Password reset successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+  }
+};
+/// Controllers for user authentication and profile management
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    const resetToken = generateResetToken();
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires =
+      Date.now() + 60 * 60 * 1000;
+
+    await user.save();
+
+    const resetUrl =
+      `http://localhost:5173/reset-password/${resetToken}`;
+
+    console.log("\n========================");
+    console.log("PASSWORD RESET URL");
+    console.log(resetUrl);
+    console.log("========================\n");
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Password reset link generated successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+  }
+};
+/// Controllers for user authentication and profile management
 module.exports = {
   registerUser,
   loginUser,
-  getProfile
+  getProfile,
+  forgotPassword,
+  resetPassword
 };
