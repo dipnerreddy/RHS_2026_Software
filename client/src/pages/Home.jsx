@@ -1,30 +1,100 @@
 import { useNavigate } from "react-router-dom";
-import authService from "../services/authService";
+
+import {
+  getUser,
+  logoutUser,
+} from "../utils/authStorage";
 
 export default function Home() {
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
-  const handleLogout = () => {
-    authService.logout();
-    navigate("/login");
-  };
+  const user =
+    getUser();
+
+  const handleLogout =
+    () => {
+      logoutUser();
+
+      navigate(
+        "/login"
+      );
+    };
+
+  const renderDashboard =
+    () => {
+      switch (
+        user?.role
+      ) {
+        case "CLASS_TEACHER":
+          return (
+            <h2 className="text-2xl font-semibold">
+              Attendance Dashboard
+            </h2>
+          );
+
+        case "BILLING_STAFF":
+          return (
+            <h2 className="text-2xl font-semibold">
+              Billing Dashboard
+            </h2>
+          );
+
+        case "HOD":
+          return (
+            <h2 className="text-2xl font-semibold">
+              HOD Dashboard
+            </h2>
+          );
+
+        case "SUPER_ADMIN":
+          return (
+            <h2 className="text-2xl font-semibold">
+              Admin Dashboard
+            </h2>
+          );
+
+        default:
+          return (
+            <h2 className="text-2xl font-semibold">
+              Unknown Role
+            </h2>
+          );
+      }
+    };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold mb-4">
-        Welcome Home 🚀
-      </h1>
+    <div className="min-h-screen p-8">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">
+            Welcome,{" "}
+            {
+              user?.name
+            }
+          </h1>
 
-      <p className="mb-8">
-        Authentication is working successfully.
-      </p>
+          <p className="text-gray-600">
+            Role:{" "}
+            {
+              user?.role
+            }
+          </p>
+        </div>
 
-      <button
-        onClick={handleLogout}
-        className="border px-6 py-2 rounded"
-      >
-        Logout
-      </button>
+        <button
+          onClick={
+            handleLogout
+          }
+          className="border px-4 py-2 rounded"
+        >
+          Logout
+        </button>
+      </div>
+
+      <div className="border rounded-lg p-6">
+        {renderDashboard()}
+      </div>
     </div>
   );
 }

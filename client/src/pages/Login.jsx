@@ -2,52 +2,73 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import authService from "../services/authService";
-
+import { saveAuth } from "../utils/authStorage";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
+  const [loading, setLoading] =
+    useState(false);
 
-  const [error, setError] = useState("");
+  const [formData, setFormData] =
+    useState({
+      email: "",
+      password: "",
+    });
+
+  const [error, setError] =
+    useState("");
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]:
+        e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (
+    e
+  ) => {
+    e.preventDefault();
 
-  try {
-    setLoading(true);
-    setError("");
+    try {
+      setLoading(true);
+      setError("");
 
-    const response = await authService.login(formData);
+      const response =
+        await authService.login(
+          formData
+        );
 
-    localStorage.setItem("token", response.token);
+      const currentUser =
+        await authService.getCurrentUser(
+          response.token
+        );
 
-    navigate("/home");
-  } catch (err) {
-    setError(
-      err.response?.data?.message ||
-      "Login failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      saveAuth(
+        response.token,
+        currentUser.data
+      );
+
+      navigate("/home");
+    } catch (err) {
+      setError(
+        err.response?.data
+          ?.message ||
+          "Login failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={
+          handleSubmit
+        }
         className="w-full max-w-md p-6 border rounded-lg"
       >
         <h1 className="text-2xl font-bold mb-6">
@@ -64,8 +85,12 @@ export default function Login() {
           type="email"
           name="email"
           placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
+          value={
+            formData.email
+          }
+          onChange={
+            handleChange
+          }
           className="w-full border p-2 mb-4 rounded"
         />
 
@@ -73,17 +98,25 @@ export default function Login() {
           type="password"
           name="password"
           placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
+          value={
+            formData.password
+          }
+          onChange={
+            handleChange
+          }
           className="w-full border p-2 mb-4 rounded"
         />
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={
+            loading
+          }
           className="w-full border p-2 rounded"
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading
+            ? "Logging in..."
+            : "Login"}
         </button>
 
         <div className="mt-4 flex justify-between">

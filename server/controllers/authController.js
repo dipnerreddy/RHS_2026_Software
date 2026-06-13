@@ -7,7 +7,13 @@ const generateResetToken = require("../utils/generateResetToken");
 /// Controllers for user authentication and profile management
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const {
+      name,
+      email,
+      password,
+      role,
+      assignedClasses
+    } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -45,7 +51,13 @@ const registerUser = async (req, res) => {
     const user = await User.create({
       name: name.trim(),
       email: normalizedEmail,
-      password: hashedPassword
+      password: hashedPassword,
+
+      role:
+        role || "CLASS_TEACHER",
+
+      assignedClasses:
+        assignedClasses || []
     });
 
     res.status(201).json({
@@ -112,7 +124,10 @@ const loginUser = async (req, res) => {
       data: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role,
+        assignedClasses:
+          user.assignedClasses
       }
     });
   } catch (error) {
@@ -225,10 +240,42 @@ const forgotPassword = async (req, res) => {
   }
 };
 /// Controllers for user authentication and profile management
+const getCurrentUser = async (
+  req,
+  res
+) => {
+  try {
+    const user =
+      await User.findById(
+        req.user.userId
+      ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message:
+          "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message:
+        "Server Error",
+    });
+  }
+};
+/// Controllers for user authentication and profile management
 module.exports = {
   registerUser,
   loginUser,
   getProfile,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  getCurrentUser
 };

@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     email: {
@@ -13,27 +13,48 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
     },
 
     password: {
       type: String,
-      required: true
+      required: true,
     },
+
+    role: {
+      type: String,
+      enum: [
+        "SUPER_ADMIN",
+        "HOD",
+        "CLASS_TEACHER",
+        "BILLING_STAFF",
+      ],
+      default: "CLASS_TEACHER",
+    },
+
+    assignedClasses: [
+      {
+        className: String,
+        section: String,
+      },
+    ],
 
     resetPasswordToken: {
       type: String,
-      default: null
+      default: null,
     },
 
     resetPasswordExpires: {
       type: Date,
-      default: null
-    }
+      default: null,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model(
+  "User",
+  userSchema
+);
