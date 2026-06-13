@@ -11,6 +11,75 @@ const {
 const authenticateUser = require("../middleware/authMiddleware");
 
 const router = express.Router();
+/// Middleware for role-based access control
+const authorizeRoles =
+  require("../middleware/roleMiddleware");
+
+/// Route for teacher dashboard access with role-based authorization
+router.get(
+  "/teacher-dashboard",
+  authenticateUser,
+    authorizeRoles(
+    "CLASS_TEACHER",
+    "SUPER_ADMIN"
+  ),
+  (req, res) => {
+    res.json({
+      success: true,
+      message:
+        "Teacher Dashboard Access Granted",
+    });
+  }
+);
+
+/// Route for billing dashboard access with role-based authorization
+router.get(
+  "/billing-dashboard",
+  authenticateUser,
+  authorizeRoles(
+    "BILLING_STAFF",
+    "SUPER_ADMIN"
+  ),
+  (req, res) => {
+    res.json({
+      success: true,
+      message:
+        "Billing Dashboard Access Granted",
+    });
+  }
+);
+
+/// Route for HOD dashboard access with role-based authorization
+router.get(
+  "/hod-dashboard",
+  authenticateUser,
+  authorizeRoles(
+    "HOD",
+    "SUPER_ADMIN"
+  ),
+  (req, res) => {
+    res.json({
+      success: true,
+      message:
+        "HOD Dashboard Access Granted",
+    });
+  }
+);
+/// Route for admin dashboard access with role-based authorization
+router.get(
+  "/admin-dashboard",
+  authenticateUser,
+  authorizeRoles(
+    "SUPER_ADMIN"
+  ),
+  (req, res) => {
+    res.json({
+      success: true,
+      message:
+        "Admin Dashboard Access Granted",
+    });
+  }
+);
 
 router.post("/register", registerUser);
 
