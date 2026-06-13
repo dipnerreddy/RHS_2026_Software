@@ -5,7 +5,8 @@ const {
   loginUser,
   getProfile,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  getCurrentUser
 } = require("../controllers/authController");
 
 const authenticateUser = require("../middleware/authMiddleware");
@@ -16,8 +17,7 @@ const authorizeRoles =
   require("../middleware/roleMiddleware");
 
 /// Route for teacher dashboard access with role-based authorization
-router.get(
-  "/teacher-dashboard",
+router.get(  "/teacher-dashboard",
   authenticateUser,
     authorizeRoles(
     "CLASS_TEACHER",
@@ -31,10 +31,8 @@ router.get(
     });
   }
 );
-
 /// Route for billing dashboard access with role-based authorization
-router.get(
-  "/billing-dashboard",
+router.get(  "/billing-dashboard",
   authenticateUser,
   authorizeRoles(
     "BILLING_STAFF",
@@ -48,7 +46,6 @@ router.get(
     });
   }
 );
-
 /// Route for HOD dashboard access with role-based authorization
 router.get(
   "/hod-dashboard",
@@ -80,13 +77,14 @@ router.get(
     });
   }
 );
+/// Route to get current user profile
+router.get("/me", authenticateUser, getCurrentUser);
 
 router.post("/register", registerUser);
 
 router.post("/login", loginUser);
 
-router.get(
-  "/profile",
+router.get( "/profile",
   authenticateUser,
   getProfile
 );

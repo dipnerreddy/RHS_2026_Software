@@ -3,6 +3,7 @@ import API_BASE_URL from "../config/api";
 
 const API_URL = `${API_BASE_URL}/api/auth`;
 
+
 const authService = {
   /// Register a new user by sending their details to the server
   register: async (userData) => {
@@ -69,6 +70,21 @@ const authService = {
       `${API_URL}/reset-password/${token}`,
       { password }
     );
+
+    return response.data;
+  },
+  /// Fetch current user details using the stored token
+  getCurrentUser: async (token) => {
+    const response =
+      await axios.get(
+        `${API_URL}/me`,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`,
+          },
+        }
+      );
 
     return response.data;
   },
