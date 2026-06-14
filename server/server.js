@@ -8,7 +8,12 @@ const academicYearRoutes = require("./routes/academicYearRoutes");
 
 const studentRoutes =
   require(
-    "./routes/studentRoutes"
+    "./routes/studentRoutes");
+
+
+const studentAcademicRoutes =
+  require(
+    "./routes/studentAcademicRoutes"
   );
 
 
@@ -44,4 +49,9 @@ app.use(
 app.use(
   "/api/students",
   studentRoutes
+);
+
+app.use(
+  "/api/student-academic",
+  studentAcademicRoutes
 );
