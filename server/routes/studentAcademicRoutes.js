@@ -15,6 +15,12 @@ const authorizeRoles =
   );
 
 const {
+  getAssignedStudents,
+} = require(
+  "../controllers/studentAcademicController"
+);
+
+const {
   assignStudentToClass,
   getStudentsByClass,
 } = require(
@@ -34,6 +40,17 @@ router.get(
   "/class",
   authenticateUser,
   getStudentsByClass
+);
+
+router.get(
+  "/assigned",
+  authenticateUser,
+  authorizeRoles(
+    "CLASS_TEACHER",
+    "HOD",
+    "SUPER_ADMIN"
+  ),
+  getAssignedStudents
 );
 
 module.exports =

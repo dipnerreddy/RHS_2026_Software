@@ -151,7 +151,87 @@ const assignStudentToClass =
     }
   };
 
+
+  const getAssignedStudents =
+  async (req, res) => {
+    try {
+      const user =
+        req.user;
+
+      const assignedClasses =
+        user.assignedClasses ||
+        [];
+
+      if (
+        assignedClasses.length ===
+        0
+      ) {
+        return res.status(200).json({
+          success: true,
+          data: [],
+        });
+      }
+
+      const filters =
+        assignedClasses.map(
+          (
+            cls
+          ) => ({
+            className:
+              cls.className,
+            section:
+              cls.section,
+          })
+        );
+
+      const students =
+        await StudentAcademicRecord.find(
+          {
+            $or:
+              filters,
+
+            status:
+              "ACTIVE",
+          }
+        )
+          .populate(
+            "studentId"
+          )
+          .sort({
+            className:
+              1,
+
+            section:
+              1,
+
+            rollNumber:
+              1,
+          });
+
+      res.status(200).json({
+        success:
+          true,
+
+        data:
+          students,
+      });
+    } catch (error) {
+      console.error(
+        error
+      );
+
+      res.status(500).json({
+        success:
+          false,
+
+        message:
+          "Server Error",
+      });
+    }
+  };
+  
 module.exports = {
   assignStudentToClass,
   getStudentsByClass,
+  getAssignedStudents,
 };
