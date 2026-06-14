@@ -6,6 +6,12 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const academicYearRoutes = require("./routes/academicYearRoutes");
 
+const studentRoutes =
+  require(
+    "./routes/studentRoutes"
+  );
+
+
 dotenv.config();
 
 connectDB();
@@ -33,4 +39,9 @@ app.listen(PORT, () => {
 app.use(
   "/api/academic-years",
   academicYearRoutes
+);
+
+app.use(
+  "/api/students",
+  studentRoutes
 );
