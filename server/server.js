@@ -6,6 +6,11 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const academicYearRoutes = require("./routes/academicYearRoutes");
 
+const attendanceRoutes =
+  require(
+    "./routes/attendanceRoutes"
+  );
+
 const studentRoutes =
   require(
     "./routes/studentRoutes");
@@ -54,4 +59,9 @@ app.use(
 app.use(
   "/api/student-academic",
   studentAcademicRoutes
+);
+
+app.use(
+  "/api/attendance",
+  attendanceRoutes
 );
