@@ -1,3 +1,4 @@
+# Radiant High School ERP
 # School Management System (SMS)
 
 A modern full-stack **School Management System** built using:
@@ -174,6 +175,9 @@ Can:
 
 ```text
 Attendance edits
+Attendance corrections
+Student promotion
+Student status changes
 View reports
 Student visibility
 ```
@@ -194,6 +198,7 @@ Cannot:
 
 ```text
 Edit attendance
+Promote students
 View other class students
 Billing
 ```
@@ -430,6 +435,117 @@ GET /api/student-academic/assigned
 
 ---
 
+# Sprint 5 → Attendance Module ✅
+
+## Attendance System
+
+Implemented:
+
+```text
+Mark attendance
+Attendance history
+NOT_MARKED detection
+HOD attendance correction
+Attendance audit logs
+```
+
+Attendance statuses:
+
+```text
+PRESENT
+ABSENT
+LEAVE
+```
+
+---
+
+## Attendance Rules
+
+### CLASS_TEACHER
+
+Can:
+
+```text
+Mark attendance
+View attendance history
+```
+
+Restrictions:
+
+```text
+Only assigned classes
+Only today's attendance
+Cannot edit attendance
+```
+
+---
+
+### HOD
+
+Can:
+
+```text
+View all classes
+Correct attendance
+Edit previous attendance
+Backdate attendance if required
+```
+
+---
+
+## Attendance Features Implemented
+
+```text
+Class-wise attendance
+Teacher class restriction
+Duplicate prevention
+Today-only attendance
+Attendance history
+NOT_MARKED detection
+Attendance correction
+Reason mandatory for edits
+Audit logs
+```
+
+---
+
+## Attendance Security
+
+Implemented:
+
+```text
+Teacher ownership validation
+Duplicate DB protection
+HOD override
+Attendance change tracking
+```
+
+---
+
+## Attendance APIs
+
+```http
+POST /api/attendance/mark
+GET  /api/attendance/history
+PUT  /api/attendance/edit
+```
+
+---
+
+## Attendance Change Logs
+
+Every attendance correction maintains:
+
+```text
+Old Status
+New Status
+Changed By
+Reason
+Timestamp
+```
+
+---
+
 # Database Collections
 
 Implemented collections:
@@ -439,16 +555,18 @@ users
 academic_years
 students
 student_academic_records
+attendance
+attendance_change_logs
 ```
 
 Upcoming collections:
 
 ```text
-attendance
-attendance_change_logs
 payments
+payment_history
 audit_logs
-teacher_assignments
+fee_structures
+student_promotions
 ```
 
 ---
@@ -594,7 +712,7 @@ School Foundation
 Status:
 
 ```text
-IN PROGRESS
+COMPLETE
 ```
 
 Completed:
@@ -609,128 +727,217 @@ Teacher Assigned Visibility
 
 ---
 
-# Upcoming Phase → Attendance Module
-
-## Attendance System
-
-Teachers will:
+## Sprint 5
 
 ```text
-View assigned students
-Mark attendance
-View attendance history
+Attendance Module
 ```
 
-Attendance statuses:
+Status:
 
 ```text
-PRESENT
-ABSENT
-LEAVE
+COMPLETE
 ```
 
----
-
-## Rules
-
-### Teachers
-
-Can:
+Completed:
 
 ```text
-Mark attendance
-```
-
-Cannot:
-
-```text
-Edit attendance later
+Attendance Marking
+Duplicate Prevention
+Attendance History
+NOT_MARKED Detection
+Attendance Correction
+Attendance Audit Logs
+Teacher Restrictions
+HOD Override
 ```
 
 ---
 
-### HOD
+# Upcoming Roadmap
 
-Can:
+# Sprint 6 → Administration Layer
+
+Status:
 
 ```text
-Edit attendance
-Correct mistakes
+PLANNED
+```
+
+### Phase 6.1 → Role Management
+
+SUPER_ADMIN can:
+
+```text
+Assign HOD
+Change user roles
+Promote/Demote staff permissions
+```
+
+Example:
+
+```text
+CLASS_TEACHER → HOD
+HOD → CLASS_TEACHER
 ```
 
 ---
 
-## Attendance Logs
+### Phase 6.2 → Teacher Assignment Management
 
-Every attendance edit will maintain:
+SUPER_ADMIN can:
 
 ```text
-Old Status
-New Status
-Changed By
-Reason
-Timestamp
+Assign teacher to class
+Remove teacher assignments
+View teacher assignments
+```
+
+Example:
+
+```text
+Teacher
+↓
+5-A
+6-B
 ```
 
 ---
 
-## Attendance Features
+### Phase 6.3 → Student Promotion System
 
-Planned:
+SUPER_ADMIN & HOD can:
 
 ```text
-Prevent duplicate attendance
-Daily attendance
-Attendance history
-Class-wise attendance
-Teacher-only assigned classes
-HOD correction
-Audit logs
+Promote students to next class
+Maintain academic history
 ```
+
+Example:
+
+```text
+2026 → 5-A
+2027 → 6-A
+```
+
+without overwriting history.
 
 ---
 
-# Future Roadmap
+### Phase 6.4 → Student Status Management
 
-## Module 2 → Billing
+SUPER_ADMIN & HOD can change:
+
+```text
+ACTIVE
+TRANSFERRED
+DROPPED
+GRADUATED
+```
+
+Example:
+
+```text
+Student leaving school
+↓
+TRANSFERRED
+```
+
+No deletion.
+
+History preserved.
+
+---
+
+# Sprint 7 → Billing Module
+
+Status:
+
+```text
+PLANNED
+```
 
 Features:
 
 ```text
 School Fees
 Bus Fees
+Tuition Fees
 Partial Payments
 Receipt Generation (PDF)
+Pending Balance
 Payment History
 Reports
-Pending Balance
+Fee Due Tracking
 ```
 
 ---
 
-## Module 3 → Super Admin
+# Sprint 8 → Super Admin Dashboard
+
+Status:
+
+```text
+PLANNED
+```
 
 Features:
 
 ```text
-Student Promotion
-Student Transfer
-Teacher Assignment
+School Analytics
+Attendance Reports
+Fee Reports
+Teacher Reports
+Student Reports
 Academic Year Management
-Reports
 ```
 
 ---
 
-## WhatsApp AI Agent (Future)
+# Sprint 9 → Parent Communication Layer
+
+Status:
+
+```text
+PLANNED
+```
 
 Features:
 
 ```text
+WhatsApp Alerts
 Attendance Alerts
 Fee Due Reminders
+Admission Follow-up
+Broadcast Notifications
+```
+
+Examples:
+
+```text
+"Your child was absent today."
+
+"Fees due: ₹5,000"
+```
+
+---
+
+# Sprint 10 → AI School Assistant
+
+Status:
+
+```text
+PLANNED
+```
+
+Features:
+
+```text
 Parent Queries
-AI School Assistant
+Fee Queries
+Attendance Queries
+Admission Support
+School Information Assistant
 ```
 
 Examples:
@@ -738,7 +945,9 @@ Examples:
 ```text
 "Did my child attend school today?"
 
-"How much fees are pending?"
+"What fees are pending?"
+
+"What is tomorrow's holiday?"
 ```
 
 ---
