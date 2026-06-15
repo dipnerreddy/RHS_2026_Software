@@ -14,6 +14,12 @@ const authorizeRoles =
     "../middleware/roleMiddleware"
   );
 
+  const {
+    editAttendance,
+  } = require(
+    "../controllers/attendanceController"
+  );
+  
 const {
   markAttendance,
   getAttendanceHistory,
@@ -43,6 +49,17 @@ router.get(
     "SUPER_ADMIN"
   ),
   getAttendanceHistory
+);
+
+
+router.put(
+  "/edit",
+  authenticateUser,
+  authorizeRoles(
+    "HOD",
+    "SUPER_ADMIN"
+  ),
+  editAttendance
 );
 
 module.exports =

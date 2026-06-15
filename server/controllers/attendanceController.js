@@ -12,6 +12,10 @@ const AcademicYear =
   require(
     "../models/AcademicYear"
   );
+const AttendanceChangeLog =
+  require(
+    "../models/AttendanceChangeLog"
+  );
 
 const markAttendance =
   async (req, res) => {
@@ -286,9 +290,115 @@ const getAttendanceHistory =
       });
     }
 };
+
+const editAttendance =
+  async (req, res) => {
+    try {
+      const user =
+        req.user;
+
+      const {
+        attendanceId,
+        newStatus,
+        reason,
+      } = req.body;
+
+      if (
+        !reason ||
+        !reason.trim()
+      ) {
+        return res
+          .status(400)
+          .json({
+            success:
+              false,
+            message:
+              "Reason is required",
+          });
+      }
+
+      const attendance =
+        await Attendance.findById(
+          attendanceId
+        );
+
+      if (
+        !attendance
+      ) {
+        return res
+          .status(404)
+          .json({
+            success:
+              false,
+            message:
+              "Attendance record not found",
+          });
+      }
+
+      if (
+        attendance.status ===
+        newStatus
+      ) {
+        return res
+          .status(400)
+          .json({
+            success:
+              false,
+            message:
+              "Attendance already has this status",
+          });
+      }
+
+      const oldStatus =
+        attendance.status;
+
+      attendance.status =
+        newStatus;
+
+      await attendance.save();
+
+      await AttendanceChangeLog.create(
+        {
+          attendanceId:
+            attendance._id,
+
+          studentId:
+            attendance.studentId,
+
+          oldStatus,
+
+          newStatus,
+
+          reason,
+
+          changedBy:
+            user._id,
+        }
+      );
+
+      res.status(200).json({
+        success:
+          true,
+        message:
+          "Attendance updated successfully",
+      });
+    } catch (error) {
+      console.error(
+        error
+      );
+
+      res.status(500).json({
+        success:
+          false,
+        message:
+          "Server Error",
+      });
+    }
+  };
   
   
 module.exports = {
   markAttendance,
   getAttendanceHistory,
+  editAttendance,
 };
