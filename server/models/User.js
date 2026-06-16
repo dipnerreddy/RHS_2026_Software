@@ -24,12 +24,13 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: [
+        "PENDING_APPROVAL",
         "SUPER_ADMIN",
         "HOD",
         "CLASS_TEACHER",
         "BILLING_STAFF",
       ],
-      default: "CLASS_TEACHER",
+      default: "PENDING_APPROVAL",
     },
 
     assignedClasses: [

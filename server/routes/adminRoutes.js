@@ -15,43 +15,53 @@ const authorizeRoles =
   );
 
 const {
-  createStudent,
-  getStudents,
-  searchStudents,
-  updateStudentStatus
+  assignRole,
 } = require(
-  "../controllers/studentController"
+  "../controllers/adminController"
 );
 
-router.post(
-  "/",
-  authenticateUser,
-  authorizeRoles(
-    "SUPER_ADMIN"
-  ),
-  createStudent
-);
-
-router.get(
-  "/",
-  authenticateUser,
-  getStudents
-);
-
-router.get(
-  "/search",
-  authenticateUser,
-  searchStudents
+const {
+  getTeachers,
+  assignClasses,
+  removeClassAssignment,
+} = require(
+  "../controllers/adminController"
 );
 
 router.put(
-  "/status",
+  "/assign-role",
   authenticateUser,
   authorizeRoles(
-    "HOD",
     "SUPER_ADMIN"
   ),
-  updateStudentStatus
+  assignRole
+);
+
+router.get(
+  "/teachers",
+  authenticateUser,
+  authorizeRoles(
+    "SUPER_ADMIN"
+  ),
+  getTeachers
+);
+
+router.put(
+  "/assign-classes",
+  authenticateUser,
+  authorizeRoles(
+    "SUPER_ADMIN"
+  ),
+  assignClasses
+);
+
+router.put(
+  "/remove-class",
+  authenticateUser,
+  authorizeRoles(
+    "SUPER_ADMIN"
+  ),
+  removeClassAssignment
 );
 
 module.exports =

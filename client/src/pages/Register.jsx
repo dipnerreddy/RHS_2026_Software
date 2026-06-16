@@ -1,63 +1,115 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
 
 import authService from "../services/authService";
 
 export default function Register() {
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
-  const [loading, setLoading] = useState(false);
+  const [
+    loading,
+    setLoading,
+  ] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [
+    formData,
+    setFormData,
+  ] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [
+    error,
+    setError,
+  ] = useState("");
 
-  const handleChange = (e) => {
+  const [
+    success,
+    setSuccess,
+  ] = useState("");
+
+  const handleChange = (
+    e
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit =
+    async (e) => {
+      e.preventDefault();
 
-    try {
-      setLoading(true);
-      setError("");
-      setSuccess("");
+      try {
+        setLoading(
+          true
+        );
 
-      const response = await authService.register(formData);
+        setError("");
+        setSuccess("");
 
-      setSuccess(response.message);
+        const response =
+          await authService.register(
+            {
+              ...formData,
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        "Registration failed"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+              role:
+                "PENDING_APPROVAL",
+            }
+          );
+
+        setSuccess(
+          response.message
+        );
+
+        setTimeout(
+          () => {
+            navigate(
+              "/login"
+            );
+          },
+          2500
+        );
+      } catch (err) {
+        setError(
+          err.response
+            ?.data
+            ?.message ||
+            "Registration failed"
+        );
+      } finally {
+        setLoading(
+          false
+        );
+      }
+    };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={
+          handleSubmit
+        }
         className="w-full max-w-md p-6 border rounded-lg"
       >
-        <h1 className="text-2xl font-bold mb-6">
+        <h1 className="text-2xl font-bold mb-2">
           Register
         </h1>
+
+        <p className="text-sm text-gray-600 mb-6">
+          After registration,
+          contact Admin
+          Department for
+          role allocation.
+        </p>
 
         {error && (
           <p className="text-red-500 mb-4">
@@ -75,8 +127,12 @@ export default function Register() {
           type="text"
           name="name"
           placeholder="Name"
-          value={formData.name}
-          onChange={handleChange}
+          value={
+            formData.name
+          }
+          onChange={
+            handleChange
+          }
           className="w-full border p-2 mb-4 rounded"
           required
         />
@@ -85,8 +141,12 @@ export default function Register() {
           type="email"
           name="email"
           placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
+          value={
+            formData.email
+          }
+          onChange={
+            handleChange
+          }
           className="w-full border p-2 mb-4 rounded"
           required
         />
@@ -95,18 +155,26 @@ export default function Register() {
           type="password"
           name="password"
           placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
+          value={
+            formData.password
+          }
+          onChange={
+            handleChange
+          }
           className="w-full border p-2 mb-4 rounded"
           required
         />
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={
+            loading
+          }
           className="w-full border p-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "Creating Account..." : "Register"}
+          {loading
+            ? "Creating Account..."
+            : "Register"}
         </button>
 
         <div className="mt-4 text-center">
@@ -114,7 +182,8 @@ export default function Register() {
             to="/login"
             className="text-blue-600 hover:underline"
           >
-            Already have an account? Login
+            Already have an
+            account? Login
           </Link>
         </div>
       </form>

@@ -14,7 +14,10 @@ const attendanceRoutes =
 const studentRoutes =
   require(
     "./routes/studentRoutes");
-
+const adminRoutes =
+  require(
+    "./routes/adminRoutes"
+  );
 
 const studentAcademicRoutes =
   require(
@@ -64,4 +67,9 @@ app.use(
 app.use(
   "/api/attendance",
   attendanceRoutes
+);
+
+app.use(
+  "/api/admin",
+  adminRoutes
 );

@@ -6,6 +6,12 @@ const generateAdmissionNumber =
     "../utils/generateAdmissionNumber"
   );
 
+const StudentAcademicRecord =
+  require(
+    "../models/StudentAcademicRecord"
+  );
+
+
 const createStudent =
   async (req, res) => {
     try {
@@ -141,8 +147,117 @@ const searchStudents =
     }
   };
 
+
+const updateStudentStatus =
+  async (req, res) => {
+    try {
+      const {
+        studentId,
+        status,
+      } = req.body;
+
+      const validStatuses =
+        [
+          "ACTIVE",
+          "TRANSFERRED",
+          "DROPPED",
+          "GRADUATED",
+        ];
+
+      if (
+        !validStatuses.includes(
+          status
+        )
+      ) {
+        return res
+          .status(400)
+          .json({
+            success:
+              false,
+            message:
+              "Invalid status",
+          });
+      }
+
+      const student =
+        await Student.findById(
+          studentId
+        );
+
+      if (
+        !student
+      ) {
+        return res
+          .status(404)
+          .json({
+            success:
+              false,
+            message:
+              "Student not found",
+          });
+      }
+
+      if (
+        student.status ===
+        status
+      ) {
+        return res
+          .status(400)
+          .json({
+            success:
+              false,
+            message:
+              "Student already has this status",
+          });
+      }
+
+      student.status =
+        status;
+
+      await student.save();
+
+      const activeRecord =
+        await StudentAcademicRecord.findOne(
+          {
+            studentId,
+            status:
+              "ACTIVE",
+          }
+        );
+
+      if (
+        activeRecord
+      ) {
+        activeRecord.status =
+          status;
+
+        await activeRecord.save();
+      }
+
+      res.status(200).json({
+        success:
+          true,
+        message:
+          "Student status updated successfully",
+      });
+    } catch (error) {
+      console.error(
+        error
+      );
+
+      res.status(500).json({
+        success:
+          false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+
 module.exports = {
   createStudent,
+  updateStudentStatus,
   getStudents,
   searchStudents,
 };

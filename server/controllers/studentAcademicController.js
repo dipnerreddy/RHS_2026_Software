@@ -230,8 +230,135 @@ const assignStudentToClass =
     }
   };
   
+
+const promoteStudent =
+  async (req, res) => {
+    try {
+      const {
+        studentId,
+        academicYearId,
+        className,
+        section,
+        rollNumber,
+      } = req.body;
+
+      const student =
+        await Student.findById(
+          studentId
+        );
+
+      if (
+        !student
+      ) {
+        return res
+          .status(404)
+          .json({
+            success:
+              false,
+            message:
+              "Student not found",
+          });
+      }
+
+      if (
+        student.status !==
+        "ACTIVE"
+      ) {
+        return res
+          .status(400)
+          .json({
+            success:
+              false,
+            message:
+              "Only active students can be promoted",
+          });
+      }
+
+      const existingPromotion =
+        await StudentAcademicRecord.findOne(
+          {
+            studentId,
+            academicYearId,
+          }
+        );
+
+      if (
+        existingPromotion
+      ) {
+        return res
+          .status(400)
+          .json({
+            success:
+              false,
+            message:
+              "Student already promoted for this academic year",
+          });
+      }
+      const currentAcademicRecord =
+        await StudentAcademicRecord.findOne(
+          {
+            studentId,
+            status:
+              "ACTIVE",
+          }
+        );
+
+      if (
+        currentAcademicRecord
+      ) {
+        currentAcademicRecord.status =
+          "COMPLETED";
+
+        await currentAcademicRecord.save();
+      }
+
+
+      const promotedStudent =
+        await StudentAcademicRecord.create(
+          {
+            studentId,
+
+            academicYearId,
+
+            className,
+
+            section,
+
+            rollNumber,
+
+            status:
+              "ACTIVE",
+          }
+        );
+
+      res.status(201).json({
+        success:
+          true,
+
+        message:
+          "Student promoted successfully",
+
+        data:
+          promotedStudent,
+      });
+    } catch (error) {
+      console.error(
+        error
+      );
+
+      res.status(500).json({
+        success:
+          false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+
 module.exports = {
   assignStudentToClass,
   getStudentsByClass,
   getAssignedStudents,
+  promoteStudent
 };

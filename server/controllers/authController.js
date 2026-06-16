@@ -11,7 +11,6 @@ const registerUser = async (req, res) => {
       name,
       email,
       password,
-      role,
       assignedClasses
     } = req.body;
 
@@ -22,23 +21,31 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedEmail =
+      email.toLowerCase().trim();
 
-    const existingUser = await User.findOne({
-      email: normalizedEmail
-    });
+    const existingUser =
+      await User.findOne({
+        email:
+          normalizedEmail
+      });
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "User already exists"
+        message:
+          "User already exists"
       });
     }
 
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-    if (!passwordRegex.test(password)) {
+    if (
+      !passwordRegex.test(
+        password
+      )
+    ) {
       return res.status(400).json({
         success: false,
         message:
@@ -46,96 +53,162 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword =
+      await bcrypt.hash(
+        password,
+        10
+      );
 
-    const user = await User.create({
-      name: name.trim(),
-      email: normalizedEmail,
-      password: hashedPassword,
+    const user =
+      await User.create({
+        name:
+          name.trim(),
 
-      role:
-        role || "CLASS_TEACHER",
+        email:
+          normalizedEmail,
 
-      assignedClasses:
-        assignedClasses || []
-    });
+        password:
+          hashedPassword,
+
+        // Always pending approval
+        role:
+          "PENDING_APPROVAL",
+
+        assignedClasses:
+          assignedClasses ||
+          [],
+      });
 
     res.status(201).json({
       success: true,
-      message: "User registered successfully",
+      message:
+        "Registration successful. Contact Admin Department for role allocation.",
       data: {
         id: user._id,
-        name: user.name,
-        email: user.email
-      }
+        name:
+          user.name,
+        email:
+          user.email,
+        role:
+          user.role,
+      },
     });
   } catch (error) {
-    console.error("Register Error:", error);
+    console.error(
+      "Register Error:",
+      error
+    );
 
     res.status(500).json({
       success: false,
-      message: "Server Error"
+      message:
+        "Server Error",
     });
   }
 };
 /// Controllers for user authentication and profile management
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const {
+      email,
+      password,
+    } = req.body;
 
-    if (!email || !password) {
+    if (
+      !email ||
+      !password
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required"
+        message:
+          "Email and password are required",
       });
     }
 
-    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedEmail =
+      email.toLowerCase().trim();
 
-    const user = await User.findOne({
-      email: normalizedEmail
-    });
+    const user =
+      await User.findOne({
+        email:
+          normalizedEmail,
+      });
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid credentials"
+        message:
+          "Invalid credentials",
       });
     }
 
-    const isPasswordMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isPasswordMatch =
+      await bcrypt.compare(
+        password,
+        user.password
+      );
 
-    if (!isPasswordMatch) {
+    if (
+      !isPasswordMatch
+    ) {
       return res.status(401).json({
         success: false,
-        message: "Invalid credentials"
+        message:
+          "Invalid credentials",
       });
     }
 
-    const token = generateToken(user);
+    // Approval check
+    if (
+      user.role ===
+      "PENDING_APPROVAL"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Contact Admin Department for role allocation",
+      });
+    }
+
+    const token =
+      generateToken(
+        user
+      );
 
     res.status(200).json({
       success: true,
-      message: "Login successful",
+      message:
+        "Login successful",
+
       token,
+
       data: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
+        id:
+          user._id,
+
+        name:
+          user.name,
+
+        email:
+          user.email,
+
+        role:
+          user.role,
+
         assignedClasses:
-          user.assignedClasses
-      }
+          user.assignedClasses,
+      },
     });
   } catch (error) {
-    console.error("Login Error:", error);
+    console.error(
+      "Login Error:",
+      error
+    );
 
     res.status(500).json({
       success: false,
-      message: "Server Error"
+      message:
+        "Server Error",
     });
   }
 };
@@ -247,24 +320,38 @@ const getCurrentUser = async (
   try {
     const user =
       await User.findById(
-        req.user.userId
-      ).select("-password");
+        req.user._id
+      ).select(
+        "-password"
+      );
 
     if (!user) {
       return res.status(404).json({
-        success: false,
+        success:
+          false,
+
         message:
           "User not found",
       });
     }
 
     res.status(200).json({
-      success: true,
-      data: user,
+      success:
+        true,
+
+      data:
+        user,
     });
   } catch (error) {
+    console.error(
+      "Get Current User Error:",
+      error
+    );
+
     res.status(500).json({
-      success: false,
+      success:
+        false,
+
       message:
         "Server Error",
     });
