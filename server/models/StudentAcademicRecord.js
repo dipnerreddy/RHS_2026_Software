@@ -44,12 +44,13 @@ const studentAcademicRecordSchema =
         type: String,
         enum: [
           "ACTIVE",
-          "PROMOTED",
+          "COMPLETED",
           "TRANSFERRED",
           "DROPPED",
+          "GRADUATED",
         ],
         default: "ACTIVE",
-      },
+      }
     },
     {
       timestamps: true,

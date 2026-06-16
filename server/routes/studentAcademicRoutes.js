@@ -23,6 +23,7 @@ const {
 const {
   assignStudentToClass,
   getStudentsByClass,
+  promoteStudent
 } = require(
   "../controllers/studentAcademicController"
 );
@@ -51,6 +52,17 @@ router.get(
     "SUPER_ADMIN"
   ),
   getAssignedStudents
+);
+
+
+router.post(
+  "/promote",
+  authenticateUser,
+  authorizeRoles(
+    "HOD",
+    "SUPER_ADMIN"
+  ),
+  promoteStudent
 );
 
 module.exports =
