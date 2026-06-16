@@ -18,6 +18,7 @@ const {
   createStudent,
   getStudents,
   searchStudents,
+  updateStudentStatus
 } = require(
   "../controllers/studentController"
 );
@@ -41,6 +42,16 @@ router.get(
   "/search",
   authenticateUser,
   searchStudents
+);
+
+router.put(
+  "/status",
+  authenticateUser,
+  authorizeRoles(
+    "HOD",
+    "SUPER_ADMIN"
+  ),
+  updateStudentStatus
 );
 
 module.exports =
