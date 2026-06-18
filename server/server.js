@@ -11,6 +11,7 @@ const receiptRoutes = require("./routes/receiptRoutes");
 const schoolSettingsRoutes = require("./routes/schoolSettingsRoutes");
 const receiptPdfRoutes = require("./routes/receiptPdfRoutes");
 const reportRoutes = require("./routes/reportRoutes");
+const exportRoutes = require("./routes/exportRoutes");
 
 const attendanceRoutes =
   require(
@@ -126,4 +127,9 @@ app.use(
 app.use(
   "/api/reports",
   reportRoutes
+);
+
+app.use(
+  "/api/exports",
+  exportRoutes
 );
