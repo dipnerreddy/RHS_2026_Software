@@ -3,6 +3,12 @@ const StudentFee =
     "../models/StudentFee"
   );
 
+
+  const createBillingLog =
+  require(
+    "../services/createBillingLog"
+  );
+
 const calculateTotals =
   (
     schoolFee,
@@ -129,13 +135,23 @@ const updateBusDetails =
         return res
           .status(404)
           .json({
-            success:
-              false,
-
+            success: false,
             message:
               "Fee record not found",
           });
       }
+
+      // OLD VALUES FOR AUDIT LOG
+      const oldValue = {
+        usesBus:
+          fee.usesBus,
+
+        busLocation:
+          fee.busLocation,
+
+        busFee:
+          fee.busFee,
+      };
 
       fee.usesBus =
         usesBus;
@@ -167,27 +183,55 @@ const updateBusDetails =
 
       await fee.save();
 
+      await createBillingLog({
+        studentFeeId:
+          fee._id,
+
+        studentId:
+          fee.studentId,
+
+        action:
+          "BUS_UPDATED",
+
+        oldValue,
+
+        newValue: {
+          usesBus:
+            fee.usesBus,
+
+          busLocation:
+            fee.busLocation,
+
+          busFee:
+            fee.busFee,
+        },
+
+        performedBy:
+          req.user.userId ||
+          req.user._id,
+      });
+
       res.status(200).json({
-        success:
-          true,
+        success: true,
 
         message:
           "Bus details updated successfully",
 
-        data:
-          fee,
+        data: fee,
       });
     } catch (error) {
-      res.status(500).json({
-        success:
-          false,
+      console.error(
+        "BUS UPDATE ERROR:",
+        error
+      );
 
+      res.status(500).json({
+        success: false,
         message:
-          "Server Error",
+          error.message,
       });
     }
   };
-
 const updateTuitionDetails =
   async (req, res) => {
     try {
@@ -205,13 +249,20 @@ const updateTuitionDetails =
         return res
           .status(404)
           .json({
-            success:
-              false,
-
+            success: false,
             message:
               "Fee record not found",
           });
       }
+
+      // OLD VALUES FOR AUDIT LOG
+      const oldValue = {
+        usesTuition:
+          fee.usesTuition,
+
+        tuitionFee:
+          fee.tuitionFee,
+      };
 
       fee.usesTuition =
         usesTuition;
@@ -238,17 +289,87 @@ const updateTuitionDetails =
 
       await fee.save();
 
+      await createBillingLog({
+        studentFeeId:
+          fee._id,
+
+        studentId:
+          fee.studentId,
+
+        action:
+          "TUITION_UPDATED",
+
+        oldValue,
+
+        newValue: {
+          usesTuition:
+            fee.usesTuition,
+
+          tuitionFee:
+            fee.tuitionFee,
+        },
+
+        performedBy:
+          req.user.userId ||
+          req.user._id,
+      });
+
       res.status(200).json({
-        success:
-          true,
+        success: true,
 
         message:
           "Tuition details updated successfully",
 
-        data:
-          fee,
+        data: fee,
       });
     } catch (error) {
+      console.error(
+        "TUITION UPDATE ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        success: false,
+        message:
+          error.message,
+      });
+    }
+  };
+
+  const BillingLog =
+  require(
+    "../models/BillingLog"
+  );
+
+const getBillingLogs =
+  async (req, res) => {
+    try {
+
+      const logs =
+        await BillingLog.find()
+          .populate(
+            "studentId",
+            "studentName admissionNumber"
+          )
+          .populate(
+            "performedBy",
+            "name role"
+          )
+          .sort({
+            createdAt:
+              -1,
+          });
+
+      res.status(200).json({
+        success:
+          true,
+
+        data:
+          logs,
+      });
+
+    } catch (error) {
+
       res.status(500).json({
         success:
           false,
@@ -259,9 +380,11 @@ const updateTuitionDetails =
     }
   };
 
+  
 module.exports = {
   getAllStudentFees,
   getStudentFee,
+  getBillingLogs,
   updateBusDetails,
   updateTuitionDetails,
 };

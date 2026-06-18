@@ -9,6 +9,7 @@ const {
   getStudentFee,
   updateBusDetails,
   updateTuitionDetails,
+  getBillingLogs,
 } = require(
   "../controllers/studentFeeController"
 );
@@ -32,6 +33,11 @@ router.use(
     "SUPER_ADMIN",
     "BILLING_STAFF"
   )
+);
+
+router.get(
+  "/logs/all",
+  getBillingLogs
 );
 
 router.get(
