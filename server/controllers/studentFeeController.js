@@ -3,7 +3,6 @@ const StudentFee =
     "../models/StudentFee"
   );
 
-
   const createBillingLog =
   require(
     "../services/createBillingLog"

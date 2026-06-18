@@ -42,10 +42,11 @@ const paymentHistorySchema =
           null,
       },
 
-      receiptNumber: {
+     receiptNumber: {
         type: String,
+        required: true,
         unique: true,
-      },
+      },  
 
       collectedBy: {
         type:

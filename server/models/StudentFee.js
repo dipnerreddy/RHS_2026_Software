@@ -107,6 +107,7 @@ studentFeeSchema.index(
   {
     studentId: 1,
     academicYearId: 1,
+    status: 1,
   },
   {
     unique: true,
