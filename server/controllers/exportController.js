@@ -3,6 +3,11 @@ const StudentFee =
     "../models/StudentFee"
   );
 
+const PaymentHistory =
+  require(
+    "../models/PaymentHistory"
+  );
+
 const {
   exportCSV,
   exportExcel,
@@ -10,47 +15,84 @@ const {
   "../services/exportService"
 );
 
-const exportOutstandingFeesCSV =
-  async (req, res) => {
-    try {
+/*
+|--------------------------------------------------------------------------
+| Helpers
+|--------------------------------------------------------------------------
+*/
 
-      const fees =
-        await StudentFee.find({
-          balanceAmount: {
-            $gt: 0,
-          },
-        })
-          .populate(
-            "studentId",
-            "studentName admissionNumber"
-          );
+const buildStudentFeeExportData =
+  (fees) =>
+    fees.map((fee) => ({
+      Student:
+        fee.studentId?.studentName,
 
-      const data =
-        fees.map(
-          (
-            fee
-          ) => ({
-            Student:
-              fee.studentId
-                ?.studentName,
+      AdmissionNumber:
+        fee.studentId?.admissionNumber,
 
-            AdmissionNumber:
-              fee.studentId
-                ?.admissionNumber,
+      TotalFee:
+        fee.totalFee,
 
-            TotalFee:
-              fee.totalFee,
+      PaidAmount:
+        fee.paidAmount,
 
-            PaidAmount:
-              fee.paidAmount,
+      BalanceAmount:
+        fee.balanceAmount,
 
-            BalanceAmount:
-              fee.balanceAmount,
+      Status:
+        fee.status,
 
-            DueDate:
-              fee.dueDate,
-          })
-        );
+      DueDate:
+        fee.dueDate,
+    }));
+
+const buildCollectionExportData =
+  (payments) =>
+    payments.map(
+      (
+        payment
+      ) => ({
+        ReceiptNumber:
+          payment.receiptNumber,
+
+        Amount:
+          payment.amount,
+
+        PaymentMethod:
+          payment.paymentMethod,
+
+        ReferenceNumber:
+          payment.referenceNumber,
+
+        PaymentDate:
+          payment.paymentDate,
+      })
+    );
+
+const exportStudentFeeData =
+  async (
+    res,
+    filter,
+    fileName,
+    format
+  ) => {
+
+    const fees =
+      await StudentFee.find(
+        filter
+      ).populate(
+        "studentId",
+        "studentName admissionNumber"
+      );
+
+    const data =
+      buildStudentFeeExportData(
+        fees
+      );
+
+    if (
+      format === "csv"
+    ) {
 
       const csv =
         exportCSV(
@@ -66,18 +108,61 @@ const exportOutstandingFeesCSV =
       );
 
       res.attachment(
-        "outstanding-fees.csv"
+        `${fileName}.csv`
       );
 
       return res.send(
         csv
       );
+    }
+
+    const workbook =
+      await exportExcel(
+        data,
+        fileName
+      );
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=${fileName}.xlsx`
+    );
+
+    await workbook.xlsx.write(
+      res
+    );
+
+    res.end();
+  };
+
+/*
+|--------------------------------------------------------------------------
+| Outstanding Fees
+|--------------------------------------------------------------------------
+*/
+
+const exportOutstandingFeesCSV =
+  async (req, res) => {
+    try {
+
+      await exportStudentFeeData(
+        res,
+        {
+          balanceAmount:
+            { $gt: 0 },
+        },
+        "outstanding-fees",
+        "csv"
+      );
 
     } catch (error) {
 
       res.status(500).json({
-        success:
-          false,
+        success: false,
         message:
           "Server Error",
       });
@@ -88,75 +173,142 @@ const exportOutstandingFeesExcel =
   async (req, res) => {
     try {
 
-      const fees =
-        await StudentFee.find({
-          balanceAmount: {
-            $gt: 0,
-          },
-        })
-          .populate(
-            "studentId",
-            "studentName admissionNumber"
-          );
-
-      const data =
-        fees.map(
-          (
-            fee
-          ) => ({
-            Student:
-              fee.studentId
-                ?.studentName,
-
-            AdmissionNumber:
-              fee.studentId
-                ?.admissionNumber,
-
-            TotalFee:
-              fee.totalFee,
-
-            PaidAmount:
-              fee.paidAmount,
-
-            BalanceAmount:
-              fee.balanceAmount,
-          })
-        );
-
-      const workbook =
-        await exportExcel(
-          data,
-          "Outstanding Fees"
-        );
-
-      res.setHeader(
-        "Content-Type",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      await exportStudentFeeData(
+        res,
+        {
+          balanceAmount:
+            { $gt: 0 },
+        },
+        "outstanding-fees",
+        "excel"
       );
-
-      res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=outstanding-fees.xlsx"
-      );
-
-      await workbook.xlsx.write(
-        res
-      );
-
-      res.end();
 
     } catch (error) {
 
       res.status(500).json({
-        success:
-          false,
+        success: false,
         message:
           "Server Error",
       });
     }
   };
 
-module.exports = {
-  exportOutstandingFeesCSV,
-  exportOutstandingFeesExcel,
-};
+/*
+|--------------------------------------------------------------------------
+| Paid Students
+|--------------------------------------------------------------------------
+*/
+
+const exportPaidStudentsCSV =
+  async (req, res) => {
+    try {
+
+      await exportStudentFeeData(
+        res,
+        {
+          status:
+            "PAID",
+        },
+        "paid-students",
+        "csv"
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+const exportPaidStudentsExcel =
+  async (req, res) => {
+    try {
+
+      await exportStudentFeeData(
+        res,
+        {
+          status:
+            "PAID",
+        },
+        "paid-students",
+        "excel"
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+/*
+|--------------------------------------------------------------------------
+| Partial Students
+|--------------------------------------------------------------------------
+*/
+
+const exportPartiallyPaidStudentsCSV =
+  async (req, res) => {
+    try {
+
+      await exportStudentFeeData(
+        res,
+        {
+          status:
+            "PARTIALLY_PAID",
+        },
+        "partially-paid-students",
+        "csv"
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+const exportPartiallyPaidStudentsExcel =
+  async (req, res) => {
+    try {
+
+      await exportStudentFeeData(
+        res,
+        {
+          status:
+            "PARTIALLY_PAID",
+        },
+        "partially-paid-students",
+        "excel"
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+
+  exports = {
+    exportOutstandingFeesCSV,
+    exportOutstandingFeesExcel,
+    exportPaidStudentsCSV,
+    exportPaidStudentsExcel,
+    exportPartiallyPaidStudentsCSV,
+    exportPartiallyPaidStudentsExcel,
+  };
+
+module.exports = exports;

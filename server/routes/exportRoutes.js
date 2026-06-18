@@ -9,6 +9,12 @@ const router =
 const {
   exportOutstandingFeesCSV,
   exportOutstandingFeesExcel,
+
+  exportPaidStudentsCSV,
+  exportPaidStudentsExcel,
+
+  exportPartiallyPaidStudentsCSV,
+  exportPartiallyPaidStudentsExcel,
 } = require(
   "../controllers/exportController"
 );
@@ -27,26 +33,76 @@ router.use(
   authenticateUser
 );
 
+/*
+|--------------------------------------------------------------------------
+| Outstanding Fees
+|--------------------------------------------------------------------------
+*/
+
 router.get(
   "/outstanding-fees/csv",
-
   authorizeRoles(
     "SUPER_ADMIN",
     "BILLING_STAFF"
   ),
-
   exportOutstandingFeesCSV
 );
 
 router.get(
   "/outstanding-fees/excel",
-
   authorizeRoles(
     "SUPER_ADMIN",
     "BILLING_STAFF"
   ),
-
   exportOutstandingFeesExcel
+);
+
+/*
+|--------------------------------------------------------------------------
+| Paid Students
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  "/paid-students/csv",
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+  exportPaidStudentsCSV
+);
+
+router.get(
+  "/paid-students/excel",
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+  exportPaidStudentsExcel
+);
+
+/*
+|--------------------------------------------------------------------------
+| Partially Paid Students
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  "/partially-paid-students/csv",
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+  exportPartiallyPaidStudentsCSV
+);
+
+router.get(
+  "/partially-paid-students/excel",
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+  exportPartiallyPaidStudentsExcel
 );
 
 module.exports =

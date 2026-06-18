@@ -38,10 +38,21 @@ const collectPayment =
         return res
           .status(404)
           .json({
-            success:
-              false,
+            success: false,
             message:
               "Student fee record not found",
+          });
+      }
+
+      if (
+        amount <= 0
+      ) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message:
+              "Payment amount must be greater than zero",
           });
       }
 
@@ -52,8 +63,7 @@ const collectPayment =
         return res
           .status(400)
           .json({
-            success:
-              false,
+            success: false,
             message:
               "Payment cannot exceed balance amount",
           });
@@ -62,26 +72,32 @@ const collectPayment =
       const oldPaidAmount =
         fee.paidAmount;
 
+      const oldBalanceAmount =
+        fee.balanceAmount;
+
+      const oldStatus =
+        fee.status;
+
       const receiptNumber =
         await generateReceiptNumber(
           fee.academicYearId
-        );  
+        );
+
       await PaymentHistory.create({
+        receiptNumber,
 
-      receiptNumber,
+        studentFeeId,
 
-      studentFeeId,
+        amount,
 
-      amount,
+        paymentMethod,
 
-      paymentMethod,
+        referenceNumber,
 
-      referenceNumber,
-
-      collectedBy:
-        req.user.userId ||
-        req.user._id,
-    });
+        collectedBy:
+          req.user.userId ||
+          req.user._id,
+      });
 
       fee.paidAmount =
         fee.paidAmount +
@@ -105,12 +121,28 @@ const collectPayment =
       fee.dueDate =
         nextDueDate;
 
+      /*
+       * STATUS LOGIC
+       */
+
       if (
-        fee.balanceAmount ===
-        0
+        fee.balanceAmount <= 0
       ) {
+
         fee.status =
           "PAID";
+
+      } else if (
+        fee.paidAmount > 0
+      ) {
+
+        fee.status =
+          "PARTIALLY_PAID";
+
+      } else {
+
+        fee.status =
+          "PENDING";
       }
 
       await fee.save();
@@ -128,11 +160,23 @@ const collectPayment =
         oldValue: {
           paidAmount:
             oldPaidAmount,
+
+          balanceAmount:
+            oldBalanceAmount,
+
+          status:
+            oldStatus,
         },
 
         newValue: {
           paidAmount:
             fee.paidAmount,
+
+          balanceAmount:
+            fee.balanceAmount,
+
+          status:
+            fee.status,
         },
 
         performedBy:
@@ -155,6 +199,9 @@ const collectPayment =
           balanceAmount:
             fee.balanceAmount,
 
+          status:
+            fee.status,
+
           dueDate:
             fee.dueDate,
         },
@@ -167,14 +214,12 @@ const collectPayment =
       );
 
       res.status(500).json({
-        success:
-          false,
+        success: false,
         message:
           "Server Error",
       });
     }
   };
-
 
 const getAllPayments =
   async (req, res) => {
@@ -195,19 +240,14 @@ const getAllPayments =
           });
 
       res.status(200).json({
-        success:
-          true,
-
-        data:
-          payments,
+        success: true,
+        data: payments,
       });
 
     } catch (error) {
 
       res.status(500).json({
-        success:
-          false,
-
+        success: false,
         message:
           "Server Error",
       });
@@ -219,12 +259,10 @@ const getStudentPayments =
     try {
 
       const payments =
-        await PaymentHistory.find(
-          {
-            studentFeeId:
-              req.params.studentFeeId,
-          }
-        )
+        await PaymentHistory.find({
+          studentFeeId:
+            req.params.studentFeeId,
+        })
           .populate(
             "collectedBy",
             "name role"
@@ -235,19 +273,14 @@ const getStudentPayments =
           });
 
       res.status(200).json({
-        success:
-          true,
-
-        data:
-          payments,
+        success: true,
+        data: payments,
       });
 
     } catch (error) {
 
       res.status(500).json({
-        success:
-          false,
-
+        success: false,
         message:
           "Server Error",
       });
@@ -272,34 +305,26 @@ const getPaymentById =
 
       if (!payment) {
         return res.status(404).json({
-          success:
-            false,
-
+          success: false,
           message:
             "Payment not found",
         });
       }
 
       res.status(200).json({
-        success:
-          true,
-
-        data:
-          payment,
+        success: true,
+        data: payment,
       });
 
     } catch (error) {
 
       res.status(500).json({
-        success:
-          false,
-
+        success: false,
         message:
           "Server Error",
       });
     }
   };
-
 
 module.exports = {
   collectPayment,
