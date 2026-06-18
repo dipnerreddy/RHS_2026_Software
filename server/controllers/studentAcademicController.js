@@ -8,6 +8,13 @@ const Student =
     "../models/Student"
   );
 
+
+const generateStudentFee =
+  require(
+    "../services/generateStudentFee"
+  );
+
+
 const AcademicYear =
   require(
     "../models/AcademicYear"
@@ -88,7 +95,16 @@ const assignStudentToClass =
             section,
             rollNumber,
           }
-        );
+              );
+
+            await generateStudentFee({
+        studentId,
+        academicYearId,
+        className,
+        createdBy:
+          req.user.userId ||
+          req.user._id,
+      });
 
       res.status(201).json({
         success: true,
@@ -330,6 +346,14 @@ const promoteStudent =
               "ACTIVE",
           }
         );
+        await generateStudentFee({
+          studentId,
+          academicYearId,
+          className,
+          createdBy:
+            req.user.userId ||
+            req.user._id,
+        });
 
       res.status(201).json({
         success:

@@ -5,12 +5,24 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const academicYearRoutes = require("./routes/academicYearRoutes");
+const discountRequestRoutes = require("./routes/discountRequestRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+const receiptRoutes = require("./routes/receiptRoutes");
+const schoolSettingsRoutes = require("./routes/schoolSettingsRoutes");
+const receiptPdfRoutes = require("./routes/receiptPdfRoutes");
+const reportRoutes = require("./routes/reportRoutes");
+const exportRoutes = require("./routes/exportRoutes");
 
 const attendanceRoutes =
   require(
     "./routes/attendanceRoutes"
   );
 
+const feeTemplateRoutes =
+  require(
+    "./routes/feeTemplateRoutes"
+  );
+  
 const studentRoutes =
   require(
     "./routes/studentRoutes");
@@ -24,7 +36,10 @@ const studentAcademicRoutes =
     "./routes/studentAcademicRoutes"
   );
 
-
+const studentFeeRoutes =
+  require(
+    "./routes/studentFeeRoutes"
+  );
 dotenv.config();
 
 connectDB();
@@ -72,4 +87,49 @@ app.use(
 app.use(
   "/api/admin",
   adminRoutes
+);
+
+app.use(
+  "/api/fee-templates",
+  feeTemplateRoutes
+);
+
+app.use(
+  "/api/student-fees",
+  studentFeeRoutes
+);
+
+app.use(
+  "/api/discount-requests",
+  discountRequestRoutes
+);
+
+app.use(
+  "/api/payments",
+  paymentRoutes
+);
+
+app.use(
+  "/api/receipts",
+  receiptRoutes
+);
+
+app.use(
+  "/api/school-settings",
+  schoolSettingsRoutes
+);
+
+app.use(
+  "/api/receipts",
+  receiptPdfRoutes
+);
+
+app.use(
+  "/api/reports",
+  reportRoutes
+);
+
+app.use(
+  "/api/exports",
+  exportRoutes
 );
