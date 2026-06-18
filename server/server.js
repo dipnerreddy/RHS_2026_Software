@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const academicYearRoutes = require("./routes/academicYearRoutes");
+const discountRequestRoutes = require("./routes/discountRequestRoutes");
 
 const attendanceRoutes =
   require(
@@ -90,4 +91,9 @@ app.use(
 app.use(
   "/api/student-fees",
   studentFeeRoutes
+);
+
+app.use(
+  "/api/discount-requests",
+  discountRequestRoutes
 );
