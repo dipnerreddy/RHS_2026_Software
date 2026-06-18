@@ -9,7 +9,7 @@ const discountRequestRoutes = require("./routes/discountRequestRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const receiptRoutes = require("./routes/receiptRoutes");
 const schoolSettingsRoutes = require("./routes/schoolSettingsRoutes");
-const receiptPdfRoutes = require("./routes/receiptPdfRoutes");Bil
+const receiptPdfRoutes = require("./routes/receiptPdfRoutes");
 
 
 const attendanceRoutes =
