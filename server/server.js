@@ -6,6 +6,9 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const academicYearRoutes = require("./routes/academicYearRoutes");
 const discountRequestRoutes = require("./routes/discountRequestRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+
+
 
 const attendanceRoutes =
   require(
@@ -96,4 +99,9 @@ app.use(
 app.use(
   "/api/discount-requests",
   discountRequestRoutes
+);
+
+app.use(
+  "/api/payments",
+  paymentRoutes
 );

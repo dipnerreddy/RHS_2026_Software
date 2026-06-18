@@ -952,6 +952,647 @@ Examples:
 
 ---
 
+---
+
+# Sprint 5 → Attendance Management System
+
+## Attendance Module
+
+Implemented:
+
+```text
+Daily Attendance
+Teacher Attendance Marking
+Teacher Assigned Class Validation
+Attendance History
+Attendance Edit Restrictions
+```
+
+### Attendance Status
+
+```text
+PRESENT
+ABSENT
+LEAVE
+```
+
+### Teacher Rules
+
+Can:
+
+```text
+Mark Attendance
+View Attendance History
+```
+
+Cannot:
+
+```text
+Edit Attendance
+Access Other Classes
+```
+
+### HOD Rules
+
+Can:
+
+```text
+Correct Attendance
+Update Attendance
+View Reports
+```
+
+### Attendance Audit Logs
+
+Stores:
+
+```text
+Old Status
+New Status
+Changed By
+Reason
+Timestamp
+```
+
+---
+
+# Sprint 6 → Student Lifecycle & Promotion System
+
+## Student Promotion Module
+
+Implemented:
+
+```text
+Student Promotion
+Academic Year Advancement
+Class Advancement
+Section Assignment
+Roll Number Assignment
+```
+
+### Promotion Logic
+
+When promoted:
+
+```text
+Previous Academic Record
+↓
+Status = COMPLETED
+
+New Academic Record
+↓
+Status = ACTIVE
+```
+
+Example:
+
+```text
+2026-27 → Class 5-A → COMPLETED
+2027-28 → Class 6-A → ACTIVE
+```
+
+---
+
+## Teacher Assignment Enhancements
+
+Implemented:
+
+```text
+Assigned Classes
+Assigned Student Visibility
+Role Based Restrictions
+```
+
+Teachers can only view:
+
+```text
+Students from assigned classes
+```
+
+---
+
+## User Approval Workflow
+
+Implemented:
+
+### Registration Flow
+
+New Users:
+
+```text
+Register
+↓
+PENDING_APPROVAL
+↓
+Contact Admin Department
+↓
+SUPER_ADMIN assigns role
+```
+
+### Roles
+
+```text
+PENDING_APPROVAL
+SUPER_ADMIN
+HOD
+CLASS_TEACHER
+BILLING_STAFF
+```
+
+### Login Restrictions
+
+```text
+PENDING_APPROVAL
+Cannot Login
+```
+
+Message:
+
+```text
+Contact Admin Department for role allocation
+```
+
+---
+
+# Sprint 7 → Billing & Financial Management
+
+## Sprint 7.1 → Fee Templates
+
+Implemented:
+
+### Academic Year Based Fee Templates
+
+Supports:
+
+```text
+Academic Year
+Class
+School Fee
+Default Tuition Fee
+```
+
+Rules:
+
+```text
+One Template Per Academic Year + Class
+Duplicate Protection
+```
+
+---
+
+## Sprint 7.2 → Student Fee Engine
+
+Implemented:
+
+### Automatic Fee Creation
+
+Occurs:
+
+```text
+Student Admission
+Student Promotion
+```
+
+Creates:
+
+```text
+Student Fee Record
+```
+
+### Student Fee Fields
+
+```text
+School Fee
+Tuition Fee
+Bus Fee
+Discount Amount
+Total Fee
+Paid Amount
+Balance Amount
+Due Date
+Last Payment Date
+Status
+```
+
+### Student Fee Status
+
+```text
+PENDING
+PARTIALLY_PAID
+PAID
+```
+
+---
+
+## Bus Fee Logic
+
+Implemented:
+
+### Optional Bus Facility
+
+Supports:
+
+```text
+Join Bus
+Leave Bus
+Rejoin Bus
+```
+
+Rules:
+
+```text
+Bus Fee is Student Specific
+Bus Fee is Location Based
+Bus Facility is Academic Year Based
+```
+
+Fields:
+
+```text
+Uses Bus
+Bus Location
+Bus Fee
+```
+
+---
+
+## Tuition Fee Logic
+
+Implemented:
+
+Fields:
+
+```text
+Uses Tuition
+Tuition Fee
+```
+
+Supports:
+
+```text
+Enable Tuition
+Disable Tuition
+```
+
+---
+
+## Fee Calculations
+
+Formula:
+
+```text
+Total Fee
+=
+School Fee
++
+Tuition Fee
++
+Bus Fee
+-
+Discount Amount
+```
+
+```text
+Balance Amount
+=
+Total Fee
+-
+Paid Amount
+```
+
+---
+
+## Due Date Logic
+
+Initial Due Date:
+
+```text
+Academic Year Start Date
++
+60 Days
+```
+
+After Every Payment:
+
+```text
+Current Date
++
+60 Days
+```
+
+Fields:
+
+```text
+Due Date
+Last Payment Date
+```
+
+---
+
+## Sprint 7.3 → Billing Audit Logs
+
+Implemented:
+
+### Billing Log Collection
+
+Tracks:
+
+```text
+Bus Updates
+Tuition Updates
+Discount Approvals
+Discount Rejections
+Payment Collection
+```
+
+### Audit Log Structure
+
+Stores:
+
+```text
+Action
+Old Value
+New Value
+Performed By
+Timestamp
+Student Fee
+Student
+```
+
+Actions:
+
+```text
+BUS_UPDATED
+TUITION_UPDATED
+DISCOUNT_APPROVED
+DISCOUNT_REJECTED
+PAYMENT_COLLECTED
+```
+
+---
+
+## Sprint 7.4 → Discount Approval Workflow
+
+### Discount Requests
+
+Workflow:
+
+```text
+BILLING_STAFF
+↓
+Create Request
+↓
+PENDING
+↓
+SUPER_ADMIN
+↓
+Approve / Reject
+```
+
+### Discount Status
+
+```text
+PENDING
+APPROVED
+REJECTED
+```
+
+### Features
+
+Implemented:
+
+```text
+One Pending Request Per Student Fee
+Partial Approval Support
+Approval Tracking
+Rejection Tracking
+Audit Logging
+```
+
+### Approval Features
+
+SUPER_ADMIN can:
+
+```text
+Approve Full Amount
+Approve Partial Amount
+Reject Request
+```
+
+---
+
+## Sprint 7.5 → Payment Collection Engine
+
+Implemented:
+
+### Payment Collection
+
+Supports:
+
+```text
+Partial Payments
+Full Payments
+```
+
+### Payment Methods
+
+```text
+CASH
+UPI
+BANK_TRANSFER
+CHEQUE
+CARD
+```
+
+### Payment History Fields
+
+Stores:
+
+```text
+Amount
+Payment Method
+Reference Number
+Collected By
+Payment Date
+```
+
+### Payment Rules
+
+Implemented:
+
+```text
+Overpayment Prevention
+Balance Validation
+Automatic Recalculation
+```
+
+### Automatic Updates
+
+After Payment:
+
+```text
+Paid Amount Updated
+Balance Amount Updated
+Last Payment Date Updated
+Due Date Extended By 60 Days
+```
+
+### Payment Audit Logs
+
+Stores:
+
+```text
+Old Paid Amount
+New Paid Amount
+Collected By
+Timestamp
+```
+
+---
+
+# Database Collections
+
+Implemented:
+
+```text
+users
+academic_years
+students
+student_academic_records
+
+attendance
+attendance_change_logs
+
+fee_templates
+student_fees
+
+discount_requests
+
+payment_histories
+
+billing_logs
+```
+
+---
+
+# Current Billing Workflow
+
+```text
+Fee Template
+        ↓
+Student Admission
+        ↓
+Student Fee Created
+        ↓
+Bus/Tuition Updates
+        ↓
+Discount Request
+        ↓
+Discount Approval
+        ↓
+Payment Collection
+        ↓
+Audit Logs
+```
+
+---
+
+# Upcoming Sprints
+
+## Sprint 7.5 Phase 2
+
+```text
+Payment History APIs
+Student Payment History
+Payment Search
+Payment Lookup
+```
+
+Status:
+
+```text
+NEXT
+```
+
+---
+
+## Sprint 7.6
+
+```text
+Receipt Number Generation
+Payment Receipts
+Receipt History
+Receipt Reprints
+```
+
+Status:
+
+```text
+PLANNED
+```
+
+---
+
+## Sprint 7.7
+
+```text
+Billing Reports
+Outstanding Fee Reports
+Collection Reports
+Academic Year Reports
+```
+
+Status:
+
+```text
+PLANNED
+```
+
+---
+
+## Sprint 8
+
+### Parent Communication System
+
+Features:
+
+```text
+Fee Due Reminders
+Payment Confirmations
+Attendance Alerts
+WhatsApp Integration
+```
+
+Status:
+
+```text
+PLANNED
+```
+
+---
+
+## Sprint 9
+
+### AI Powered School Assistant
+
+Features:
+
+```text
+Parent Queries
+Fee Status Lookup
+Attendance Lookup
+Student Information Queries
+WhatsApp AI Agent
+```
+
+Status:
+
+```text
+PLANNED
+```
+
+---
+
 # Author
 
 Built as a scalable, production-ready School Management System using the MERN stack.
