@@ -3,6 +3,11 @@ const StudentFee =
     "../models/StudentFee"
   );
 
+const PaymentHistory =
+  require(
+    "../models/PaymentHistory"
+  );
+
 const getOutstandingFees =
   async (req, res) => {
     try {
