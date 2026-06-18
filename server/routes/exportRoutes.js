@@ -15,6 +15,12 @@ const {
 
   exportPartiallyPaidStudentsCSV,
   exportPartiallyPaidStudentsExcel,
+
+  exportPendingStudentsCSV,
+  exportPendingStudentsExcel,
+
+  exportCollectionSummaryCSV,
+  exportCollectionSummaryExcel,
 } = require(
   "../controllers/exportController"
 );
@@ -103,6 +109,54 @@ router.get(
     "BILLING_STAFF"
   ),
   exportPartiallyPaidStudentsExcel
+);
+
+/*
+|--------------------------------------------------------------------------
+| Pending Students
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  "/pending-students/csv",
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+  exportPendingStudentsCSV
+);
+
+router.get(
+  "/pending-students/excel",
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+  exportPendingStudentsExcel
+);
+
+/*
+|--------------------------------------------------------------------------
+| Collection Summary
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  "/collection-summary/csv",
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+  exportCollectionSummaryCSV
+);
+
+router.get(
+  "/collection-summary/excel",
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+  exportCollectionSummaryExcel
 );
 
 module.exports =

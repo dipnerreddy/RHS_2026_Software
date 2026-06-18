@@ -253,6 +253,143 @@ const exportPaidStudentsExcel =
 |--------------------------------------------------------------------------
 */
 
+
+const exportPendingStudentsCSV =
+  async (req, res) => {
+    try {
+
+      await exportStudentFeeData(
+        res,
+        {
+          status:
+            "PENDING",
+        },
+        "pending-students",
+        "csv"
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+const exportPendingStudentsExcel =
+  async (req, res) => {
+    try {
+
+      await exportStudentFeeData(
+        res,
+        {
+          status:
+            "PENDING",
+        },
+        "pending-students",
+        "excel"
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+
+  const exportCollectionSummaryCSV =
+  async (req, res) => {
+    try {
+
+      const payments =
+        await PaymentHistory.find();
+
+      const data =
+        buildCollectionExportData(
+          payments
+        );
+
+      const csv =
+        exportCSV(
+          data,
+          Object.keys(
+            data[0] || {}
+          )
+        );
+
+      res.header(
+        "Content-Type",
+        "text/csv"
+      );
+
+      res.attachment(
+        "collection-summary.csv"
+      );
+
+      return res.send(
+        csv
+      );
+
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+const exportCollectionSummaryExcel =
+  async (req, res) => {
+    try {
+
+      const payments =
+        await PaymentHistory.find();
+
+      const data =
+        buildCollectionExportData(
+          payments
+        );
+
+      const workbook =
+        await exportExcel(
+          data,
+          "Collection Summary"
+        );
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=collection-summary.xlsx"
+      );
+
+      await workbook.xlsx.write(
+        res
+      );
+
+      res.end();
+
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Server Error",
+      });
+    }
+  };
+
 const exportPartiallyPaidStudentsCSV =
   async (req, res) => {
     try {
@@ -302,13 +439,20 @@ const exportPartiallyPaidStudentsExcel =
   };
 
 
-  exports = {
-    exportOutstandingFeesCSV,
-    exportOutstandingFeesExcel,
-    exportPaidStudentsCSV,
-    exportPaidStudentsExcel,
-    exportPartiallyPaidStudentsCSV,
-    exportPartiallyPaidStudentsExcel,
-  };
+module.exports = {
+  exportOutstandingFeesCSV,
+  exportOutstandingFeesExcel,
 
-module.exports = exports;
+  exportPaidStudentsCSV,
+  exportPaidStudentsExcel,
+
+  exportPartiallyPaidStudentsCSV,
+  exportPartiallyPaidStudentsExcel,
+
+  exportPendingStudentsCSV,
+  exportPendingStudentsExcel,
+
+  exportCollectionSummaryCSV,
+  exportCollectionSummaryExcel,
+};
+
