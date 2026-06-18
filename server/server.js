@@ -7,7 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const academicYearRoutes = require("./routes/academicYearRoutes");
 const discountRequestRoutes = require("./routes/discountRequestRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
-
+const receiptRoutes = require("./routes/receiptRoutes");
 
 
 const attendanceRoutes =
@@ -104,4 +104,9 @@ app.use(
 app.use(
   "/api/payments",
   paymentRoutes
+);
+
+app.use(
+  "/api/receipts",
+  receiptRoutes
 );
