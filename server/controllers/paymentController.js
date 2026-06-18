@@ -13,6 +13,11 @@ const createBillingLog =
     "../services/createBillingLog"
   );
 
+const generateReceiptNumber =
+  require(
+    "../utils/generateReceiptNumber"
+  );
+
 const collectPayment =
   async (req, res) => {
     try {
@@ -57,19 +62,26 @@ const collectPayment =
       const oldPaidAmount =
         fee.paidAmount;
 
+      const receiptNumber =
+        await generateReceiptNumber(
+          fee.academicYearId
+        );  
       await PaymentHistory.create({
-        studentFeeId,
 
-        amount,
+      receiptNumber,
 
-        paymentMethod,
+      studentFeeId,
 
-        referenceNumber,
+      amount,
 
-        collectedBy:
-          req.user.userId ||
-          req.user._id,
-      });
+      paymentMethod,
+
+      referenceNumber,
+
+      collectedBy:
+        req.user.userId ||
+        req.user._id,
+    });
 
       fee.paidAmount =
         fee.paidAmount +
@@ -129,11 +141,12 @@ const collectPayment =
       });
 
       res.status(200).json({
-        success:
-          true,
+        success: true,
 
         message:
           "Payment collected successfully",
+
+        receiptNumber,
 
         data: {
           paidAmount:
@@ -162,6 +175,135 @@ const collectPayment =
     }
   };
 
+
+const getAllPayments =
+  async (req, res) => {
+    try {
+
+      const payments =
+        await PaymentHistory.find()
+          .populate(
+            "studentFeeId"
+          )
+          .populate(
+            "collectedBy",
+            "name role"
+          )
+          .sort({
+            paymentDate:
+              -1,
+          });
+
+      res.status(200).json({
+        success:
+          true,
+
+        data:
+          payments,
+      });
+
+    } catch (error) {
+
+      res.status(500).json({
+        success:
+          false,
+
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+const getStudentPayments =
+  async (req, res) => {
+    try {
+
+      const payments =
+        await PaymentHistory.find(
+          {
+            studentFeeId:
+              req.params.studentFeeId,
+          }
+        )
+          .populate(
+            "collectedBy",
+            "name role"
+          )
+          .sort({
+            paymentDate:
+              -1,
+          });
+
+      res.status(200).json({
+        success:
+          true,
+
+        data:
+          payments,
+      });
+
+    } catch (error) {
+
+      res.status(500).json({
+        success:
+          false,
+
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+const getPaymentById =
+  async (req, res) => {
+    try {
+
+      const payment =
+        await PaymentHistory.findById(
+          req.params.paymentId
+        )
+          .populate(
+            "studentFeeId"
+          )
+          .populate(
+            "collectedBy",
+            "name role"
+          );
+
+      if (!payment) {
+        return res.status(404).json({
+          success:
+            false,
+
+          message:
+            "Payment not found",
+        });
+      }
+
+      res.status(200).json({
+        success:
+          true,
+
+        data:
+          payment,
+      });
+
+    } catch (error) {
+
+      res.status(500).json({
+        success:
+          false,
+
+        message:
+          "Server Error",
+      });
+    }
+  };
+
+
 module.exports = {
   collectPayment,
+  getAllPayments,
+  getStudentPayments,
+  getPaymentById,
 };

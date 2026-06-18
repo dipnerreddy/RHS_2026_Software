@@ -42,6 +42,11 @@ const paymentHistorySchema =
           null,
       },
 
+      receiptNumber: {
+        type: String,
+        unique: true,
+      },
+
       collectedBy: {
         type:
           mongoose.Schema.Types.ObjectId,
