@@ -10,6 +10,7 @@ const {
   getAllReceipts,
   getReceiptByNumber,
   getStudentReceipts,
+  getPrintableReceipt,
 } = require(
   "../controllers/receiptController"
 );
@@ -23,6 +24,7 @@ const authorizeRoles =
   require(
     "../middleware/roleMiddleware"
   );
+
 
 router.use(
   authenticateUser
@@ -59,6 +61,17 @@ router.get(
   ),
 
   getReceiptByNumber
+);
+
+router.get(
+  "/:receiptNumber/print",
+
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+
+  getPrintableReceipt
 );
 
 module.exports =

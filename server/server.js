@@ -8,6 +8,8 @@ const academicYearRoutes = require("./routes/academicYearRoutes");
 const discountRequestRoutes = require("./routes/discountRequestRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const receiptRoutes = require("./routes/receiptRoutes");
+const schoolSettingsRoutes = require("./routes/schoolSettingsRoutes");
+const receiptPdfRoutes = require("./routes/receiptPdfRoutes");Bil
 
 
 const attendanceRoutes =
@@ -109,4 +111,14 @@ app.use(
 app.use(
   "/api/receipts",
   receiptRoutes
+);
+
+app.use(
+  "/api/school-settings",
+  schoolSettingsRoutes
+);
+
+app.use(
+  "/api/receipts",
+  receiptPdfRoutes
 );
