@@ -22,12 +22,15 @@ const billingLogSchema =
         type: String,
         required: true,
         enum: [
-          "BUS_UPDATED",
-          "TUITION_UPDATED",
-          "DISCOUNT_REQUESTED",
-          "DISCOUNT_APPROVED",
-          "PAYMENT_COLLECTED",
-          "FEE_UPDATED",
+            "BUS_UPDATED",
+            "TUITION_UPDATED",
+
+            "DISCOUNT_REQUESTED",
+            "DISCOUNT_APPROVED",
+            "DISCOUNT_REJECTED",
+
+            "PAYMENT_COLLECTED",
+            "FEE_UPDATED",
         ],
       },
 

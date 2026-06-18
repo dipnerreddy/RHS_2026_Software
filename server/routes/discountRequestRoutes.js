@@ -23,6 +23,13 @@ const authorizeRoles =
     "../middleware/roleMiddleware"
   );
 
+const {
+  approveDiscountRequest,
+  rejectDiscountRequest,
+} = require(
+  "../controllers/discountRequestController"
+);
+
 router.use(
   authenticateUser
 );
@@ -43,6 +50,26 @@ router.get(
     "BILLING_STAFF"
   ),
   getDiscountRequests
+);
+
+router.put(
+  "/:id/approve",
+
+  authorizeRoles(
+    "SUPER_ADMIN"
+  ),
+
+  approveDiscountRequest
+);
+
+router.put(
+  "/:id/reject",
+
+  authorizeRoles(
+    "SUPER_ADMIN"
+  ),
+
+  rejectDiscountRequest
 );
 
 module.exports =
