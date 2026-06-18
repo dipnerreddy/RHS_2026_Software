@@ -11,6 +11,11 @@ const attendanceRoutes =
     "./routes/attendanceRoutes"
   );
 
+const feeTemplateRoutes =
+  require(
+    "./routes/feeTemplateRoutes"
+  );
+  
 const studentRoutes =
   require(
     "./routes/studentRoutes");
@@ -72,4 +77,9 @@ app.use(
 app.use(
   "/api/admin",
   adminRoutes
+);
+
+app.use(
+  "/api/fee-templates",
+  feeTemplateRoutes
 );
