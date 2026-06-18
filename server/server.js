@@ -29,7 +29,10 @@ const studentAcademicRoutes =
     "./routes/studentAcademicRoutes"
   );
 
-
+const studentFeeRoutes =
+  require(
+    "./routes/studentFeeRoutes"
+  );
 dotenv.config();
 
 connectDB();
@@ -82,4 +85,9 @@ app.use(
 app.use(
   "/api/fee-templates",
   feeTemplateRoutes
+);
+
+app.use(
+  "/api/student-fees",
+  studentFeeRoutes
 );

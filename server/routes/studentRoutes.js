@@ -8,7 +8,7 @@ const authenticateUser =
   require(
     "../middleware/authMiddleware"
   );
-
+  
 const authorizeRoles =
   require(
     "../middleware/roleMiddleware"
