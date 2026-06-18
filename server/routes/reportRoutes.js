@@ -9,9 +9,13 @@ const router =
 const {
   getOutstandingFees,
   getStudentOutstandingFee,
-} = require(
-  "../controllers/reportController"
-);
+  getPaidStudents,
+    getPartiallyPaidStudents,
+    getPendingStudents,
+    getCollectionSummary
+    } = require(
+    "../controllers/reportController"
+    );
 
 const authenticateUser =
   require(
@@ -28,6 +32,17 @@ router.use(
 );
 
 router.get(
+  "/collection-summary",
+
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+
+  getCollectionSummary
+);
+
+router.get(
   "/outstanding-fees",
 
   authorizeRoles(
@@ -36,6 +51,40 @@ router.get(
   ),
 
   getOutstandingFees
+);
+
+
+router.get(
+  "/paid-students",
+
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+
+  getPaidStudents
+);
+
+router.get(
+  "/partially-paid-students",
+
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+
+  getPartiallyPaidStudents
+);
+
+router.get(
+  "/pending-students",
+
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "BILLING_STAFF"
+  ),
+
+  getPendingStudents
 );
 
 router.get(
